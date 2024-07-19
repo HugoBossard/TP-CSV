@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -25,6 +26,7 @@ public class Dictionnaire {
                 motDef.put(mot, definition);
                 ligne = csvReader.readNext();
             }
+
         } catch (FileNotFoundException e) {
             ErreurCustom.afficheErreur();
             e.printStackTrace();
@@ -50,13 +52,28 @@ public class Dictionnaire {
         }
     }
 
+    public final void ajouterMotEtDef(Scanner scan) {
+        if (!motDef.isEmpty()) {
+            System.out.print("Insèrer un nouveau mot : ");
+            String mot = scan.nextLine().toLowerCase();
+
+            System.out.print("Insèrer sa définition : ");
+            String definition = scan.nextLine();
+
+            motDef.put(mot, definition);
+
+            System.out.println("Le mot " + mot + " a été ajouté");
+        }
+        else {
+            System.out.println("Le dictionnaire n'est pas instancier, impossible d'ajouter des nouveaux mots");
+        }
+    }
+
     public final void sauvegarderListeMot(String cheminFichier) {
         Set<String> keySet = motDef.keySet();
 
         if (keySet.size() > 0) {
-            try (FileWriter fileWriter = new FileWriter(cheminFichier)) {
-                CSVWriter csvWriter = new CSVWriter(fileWriter);
-    
+            try (FileWriter fileWriter = new FileWriter(cheminFichier); CSVWriter csvWriter = new CSVWriter(fileWriter);) {
                 String[] firstLine = { "Mot", "Definition" };
     
                 csvWriter.writeNext(firstLine);
@@ -65,8 +82,6 @@ public class Dictionnaire {
                     String[] currentLine = { key, motDef.get(key) };
                     csvWriter.writeNext(currentLine);
                 }
-    
-                csvWriter.close();
             } catch (FileNotFoundException e) {
                 ErreurCustom.afficheErreur();
                 e.printStackTrace();
